@@ -1,7 +1,7 @@
 # Site settings
 title: Prometheuscx Blog
 SEOTitle: Prometheuscx Blog | Prometheuscx Blog
-header-img: img/home-bg.jpg
+header-img: img/more.jpg
 email: zhongyu13@foxmail.com
 description: "关于前端与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Front-End Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。"
 keyword: "黄玄, Hux黄玄, Prometheuscx, 鬼栈, Prometheuscx, @huxpro, 黄玄的博客, Prometheuscx Blog, 博客, 个人网站, 互联网, 前端, 设计, 产品, 肖玉, Lynn, 肖玉的男朋友"
@@ -44,9 +44,9 @@ kramdown:
 #disqus_username: _your_disqus_short_name_
 
 # Duoshuo settings
-duoshuo_username: huxblog
+#duoshuo_username: huxblog			#关闭了多说评论分享功能
 # Share component is depend on Comment so we can NOT use share only.
-duoshuo_share: true                     # set to false if you want to use Comment without Sharing
+#duoshuo_share: false                     # set to false if you want to use Comment without Sharing
 
 
 
@@ -75,6 +75,10 @@ featured-condition-size: 1              # A tag will be featured if the size of 
 
 # Friends
 friends: [
+		{
+			title: "Hux Blog<该博客模板出处>",
+			href: "http://www.huangxuan.me"
+		}
   #  {
   #      title: "天镶的博客",
   #      href: "http://lingyu.wang/"
