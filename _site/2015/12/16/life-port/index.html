@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="google-site-verification" content="xBT4GhYoi5qRD5tr338pgPM5OWHHIDR6mNg1a3euekI" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="关于前端与设计、黑客与画家 | 黄玄，Web & Mobile Lover，Front-End Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。">
+    <meta name="keyword"  content="黄玄, Hux黄玄, Prometheuscx, 鬼栈, Prometheuscx, @huxpro, 黄玄的博客, Prometheuscx Blog, 博客, 个人网站, 互联网, 前端, 设计, 产品, 肖玉, Lynn, 肖玉的男朋友">
+    <link rel="shortcut icon" href="img/kkcapture.ico">
+
+    <title>成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！ - Prometheuscx Blog | Prometheuscx Blog</title>
+
+    <link rel="canonical" href="http://prometheuscx.github.io.//2015/12/16/life-port/">
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/css/hux-blog.min.css">
+
+    <!-- Pygments Github CSS -->
+    <link rel="stylesheet" href="/css/syntax.css">
+
+    <!-- Custom Fonts -->
+    <!-- <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet" type="text/css"> -->
+    <!-- Hux change font-awesome CDN to qiniu -->
+    <link href="http://cdn.staticfile.org/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+
+    <!-- Hux Delete, sad but pending in China
+    <link href='http://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/
+    css'>
+    -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- ga & ba script hoook -->
+    <script></script>
+</head>
+
+
+<!-- hack iOS CSS :active style -->
+<body ontouchstart="">
+
+    <!-- Navigation -->
+<nav class="navbar navbar-default navbar-custom navbar-fixed-top">
+    <div class="container-fluid">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header page-scroll">
+            <button type="button" class="navbar-toggle">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Prometheuscx Blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <!-- Known Issue, found by Hux:
+            <nav>'s height woule be hold on by its content.
+            so, when navbar scale out, the <nav> will cover tags.
+            also mask any touch event of tags, unfortunately.
+        -->
+        <div id="huxblog_navbar">
+            <div class="navbar-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="/">Home</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/about/">About</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/portfolio/">Portfolio</a>
+                    </li>
+                    
+                    <li>
+                        <a href="/tags/">Tags</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <!-- /.navbar-collapse -->
+    </div>
+    <!-- /.container -->
+</nav>
+<script>
+    // Drop Bootstarp low-performance Navbar
+    // Use customize navbar with high-quality material design animation
+    // in high-perf jank-free CSS3 implementation
+    var $body   = document.body;
+    var $toggle = document.querySelector('.navbar-toggle');
+    var $navbar = document.querySelector('#huxblog_navbar');
+    var $collapse = document.querySelector('.navbar-collapse');
+
+    $toggle.addEventListener('click', handleMagic)
+    function handleMagic(e){
+        if ($navbar.className.indexOf('in') > 0) {
+        // CLOSE
+            $navbar.className = " ";
+            // wait until animation end.
+            setTimeout(function(){
+                // prevent frequently toggle
+                if($navbar.className.indexOf('in') < 0) {
+                    $collapse.style.height = "0px"
+                }
+            },400)
+        }else{
+        // OPEN
+            $collapse.style.height = "auto"
+            $navbar.className += " in";
+        }
+    }
+</script>
+
+
+    <!-- Image to hack wechat -->
+<!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
+<!-- <img src="/img/contact-bg.jpg" width="0" height="0"> -->
+
+<!-- Post Header -->
+<style type="text/css">
+    header.intro-header{
+        background-image: url('/img/contact-bg.jpg')
+    }
+</style>
+<header class="intro-header" >
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <div class="post-heading">
+                    <div class="tags">
+                        
+                        <a class="tag" href="/tags/#短句" title="短句">短句</a>
+                        
+                        <a class="tag" href="/tags/#生活" title="生活">生活</a>
+                        
+                    </div>
+                    <h1>成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！</h1>
+                    
+                    
+                    <h2 class="subheading">请不要浪费时间 </h2>
+                    
+                    <span class="meta">Posted by Prometheuscx on December 16, 2015</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Post Content -->
+<article>
+    <div class="container">
+        <div class="row">
+
+    <!-- Post Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                post-container">
+
+				<p>关注”自由企业家”很久了，久而久之，就习惯了从上面摘录一些自己喜欢的句子，文字，确实被它影响了好多，是我一路上的良师益友</p>
+
+<ol>
+  <li>
+    <p>尽量少干两件事：用自己的嘴干扰别人的生活，靠别人的脑子思考自己的人生</p>
+  </li>
+  <li>
+    <p>并不是所有的痛，都可以呐喊，也不是所有的爱，都可以表白，不要过分展现你的悲伤，因为，谁都没有比谁生活的容易。</p>
+  </li>
+</ol>
+
+<p><img src="http://prometheuscx.github.io/img/life-lang/life_love.jpg" alt="" /></p>
+
+<ol>
+  <li>
+    <p><strong>世上最好的保鲜就是不断进步，让自己成为一个更好和更值得爱的人。</strong></p>
+  </li>
+  <li>
+    <p>在你最需要安慰的时候，一句“我在”，是这个世界上最温暖的力量。</p>
+  </li>
+  <li>
+    <p>一个成功男人永远也不会嫌弃自己的女人太优秀，除非他驾驭不了！就像一个女人永远不会嫌弃一件衣服太漂亮，除非她穿不上或买不起！</p>
+  </li>
+  <li>
+    <p>有时候，恰恰是你不经意的一句话，就成了朋友心里一直温暖的火焰。这种感动，往往不经意，才更加动容。</p>
+  </li>
+  <li>
+    <p>这辈子，和谁过、怎样过、过多久，有人因为爱情、有人因为物质、有人因为容貌、有人因为前途、有人因为压力…….而当这日子真的要和选择的人一起过了，你才明白：钱够花就好，容貌不吓人就行。其实真正的幸福很简单：只要笑容比眼泪多，你就找对人了。</p>
+  </li>
+  <li>
+    <p><strong>你要努力，你想要的，只能你自己给；别人给的，你要问问自己，拿得起么。</strong></p>
+  </li>
+  <li>
+    <p>等脚已定型，心也定性的时候，再找一双适合自己的鞋，鞋子不一定要别人看起来高大上，只需在经历风雨泥泞之后仍然不脱帮掉底便好</p>
+  </li>
+  <li>
+    <p>不自卑的表现，听不懂就问到底是啥，买不起就说有些贵，配不上就说那就算了。但是大多数人，都是听不懂也点点头，买不起说不稀罕，配不上说不过随便玩玩。</p>
+  </li>
+  <li>
+    <p>我现在主要做两件事：一是让自己变得更好，二是等待更好的你到来。</p>
+  </li>
+  <li>
+    <p>让人产生巨大动力的，往往是些细微的小事。被雨敲湿的肩膀，熨烫平整的衬衣，阳光打亮的微笑，凌晨六点的空气，母亲说再见时的哽咽，身边人的一声叹息。因为生活就是这些小事。因为在乎，所以有动力。</p>
+  </li>
+  <li>
+    <p><strong>成功从来都不是击败别人，而是改变自己</strong></p>
+  </li>
+  <li>
+    <p><strong>一个不愿付出、不愿冒风险的人，一事无成对他来说是再自然不过的事</strong></p>
+  </li>
+  <li>
+    <p>让人觉得你可有可无，你被踢开的日子就不远了</p>
+  </li>
+  <li>
+    <p><strong>你连追求自己喜欢的事物与人的勇气都没有，你注定是个失败者</strong></p>
+  </li>
+  <li>如果你希望一切，都能变得更加美好，就从改变自己开始。</li>
+  <li>现在你最不想做的，其实是你最好的选择</li>
+  <li>不要去计算时间，让时间来证明一切</li>
+</ol>
+
+<p><img src="http://prometheuscx.github.io/img/life-lang/life_pro.jpg" alt="" /></p>
+
+<ol>
+  <li><strong>要么健身、要么读书，身体和灵魂，必须有一个在路上</strong></li>
+  <li><strong>生活从未变得轻松，是你在一点一点变强大</strong></li>
+  <li>对生命而言，接纳才是最好的温柔，无论是接纳一个人的出现，还是接纳一个人的从此不见。</li>
+  <li>生活累，一小半源于生存，一大半源于攀比。</li>
+  <li>人生没有绝对的公平，但是相对还是公平的。放在一个天平上，你得到的越多，也必须比别人承受的更多。</li>
+  <li><strong>你永远不知道自己有多坚强，直到有一天你除了坚强再无选择。</strong></li>
+  <li><strong>人不逼自己一把，永远不知道自己有多优秀</strong></li>
+  <li>撑不住的时候，可以对自己说声“我好累”，但永远不要在心里承认说“我不行”</li>
+  <li>知世故而不世故，才是最善良的成熟</li>
+  <li>生命中有很多事情足以把你打倒，但真正打倒你的是自己的心态(信念丢失)</li>
+  <li><strong>谁可以帮助我实现梦想？只有我和“我”(只有自己和一群有着相似目标的团体、平台（小我与大我）)</strong></li>
+  <li>一生都在挣扎，决不放弃、直到倒在挣扎途中</li>
+  <li><strong>你不快乐是因为：你可以像只猪一样懒，却无法像只猪一样，懒得心安理得</strong></li>
+  <li>成长就是一个不断认为以前的自己是个傻X的过程</li>
+  <li><strong>迷茫烦恼的问题主要在于：懂得不多而想太多。读书太少又特爱思考，还话唠，人丑就该多读书。</strong></li>
+  <li>当你在高处的时候，你的朋友知道你是谁，当你坠落的时候，你才知道你的朋友是谁。</li>
+  <li>不要在最应该奋斗的年纪选择去偷懒，只有度过了一段连自己都被感动的日子，才会变成那个最好的自己。</li>
+  <li>本想把日子过成诗，时而简单，时而精致。不料日子却过成了我的歌，时而不靠谱，时而不着调。</li>
+  <li>格局：如果一点点挫折就让你爬不起来，如果一两句坏话、就不能让你释怀，如果动不动就讨厌人，憎恨人，那格局就太小了。</li>
+  <li>胸怀：做人有多大气，就会有多成功。海纳百川，有容乃大；壁立千仞，无欲则刚。因为胸怀，才是成功者的标志。</li>
+  <li>铭记：永远要记住这句话：越努力，越幸运。</li>
+  <li>空怀：放下你的浮躁，放下你的懒惰，放下你的三分钟热度，放空你禁不住诱惑的大脑，放开你容易被任何事物吸引的眼睛，放淡你什么都想聊两句八卦的嘴巴，静下心来好好做你该做的事，该好好努力了！有时真的努力后，你会发现自己要比想象的优秀很多。</li>
+  <li>希望：世上除了生死，其他都是小事。不管遇到了什么烦心事，都不要自己为难自己；无论今天发生多么糟糕的事，都不要对生活失望，因为还有明天。</li>
+  <li>目标：有目标的人在奔跑，没目标的人在流浪，因为不知道要去哪里！有目标的人在感恩，没目标的人在抱怨，因为觉得全世界都欠他的！有目标的人睡不着，没目标的人睡不醒，因为不知道起来去干嘛。</li>
+  <li>生命只有走出来的精彩，没有等待出来的辉煌。</li>
+  <li>坚持：如果感到此时的自己很辛苦，那告诉自己：容易走的都是下坡路！坚持住，因为你正在走上坡路，走过去，你就一定会有进步。</li>
+  <li>努力：如果，你正在埋怨命运的不眷顾，那请记住：命，是失败者的借口；运，是成功者的谦词。命虽由天定，但埋怨，只是一种懦弱的表现。</li>
+  <li><strong>每一个理智淡定的现在，都有一个很傻很天真的曾经</strong></li>
+  <li>我们要时刻准备好跟随自己的心，而不是随波逐流</li>
+  <li>得到一件东西需要智慧，放弃一样东西则需要勇气。</li>
+  <li>日子原该这样朴素无华，是时间左右了我们太多，才给了我们闯荡江湖的勇气，给了我们踏遍河山的决心。</li>
+  <li>岁月终究不肯饶恕，你走过的一山一水，要用一朝一夕来偿还。</li>
+  <li>做一个平静的人，做一个善良的人，做一个微笑挂在嘴边，快乐放在心上的人。</li>
+  <li>如此情深，却难以启齿。其实你若真爱一个人，内心酸涩，反而会说不出话来，甜言蜜语，多数说给不相干的人听。</li>
+  <li>如果时光倒转，我想在更美的年华里，遇见你。不要等我流泪，你才明白我的悲伤。不要等我消失，你才知道我的存在。</li>
+  <li>怕什么路途遥远。走一步有走一步的风景，进一步有进一步的欢喜。快乐的人，不为失去的愤愤不平，只为还拥有的感激不已。你对成功的欲望必须大于对失败的恐惧，方能成功。近在咫尺的幸福是：每天拥有新的开始。</li>
+  <li>等待太久得来的东西，多半已经不是当初自己想要的样子了。心情不好时，闭上眼，告诉自己，这是幻觉。</li>
+  <li>有些事难以左右，有些话难以开口。好在时光慈悲，我们还能拥有回忆。没有人能陪你走一辈子，所以你要适应孤独；没有人会帮你一辈子，所以你要一直奋斗。</li>
+  <li>人的不幸在于他们不想走自己那条路，总想过别人的桥。天下就没有偶然，那不过是化了妆的、戴了面具的必然。改变，永远不嫌晚。无论你是几岁，也无论你目前所处的境况有多糟，只要立定目标、一步一步往前走，人生随时都有翻盘的可能性。</li>
+  <li><strong>要生活的漂亮，需要付出极大忍耐，一不抱怨，二不解释。谁不是一边受伤，一边学会坚强。</strong></li>
+  <li>忘掉所有那些“不可能“的借口，去坚持那一个”可能“的理由。所谓勇气，就是不断经历失败，但是从不丧失热情。</li>
+  <li>当你每天醒来的时候都有两个选择：1、醒来，再睡，继续未完的美梦；2、醒来，站起来，去实现自己的梦想。有些话，适合烂在心里，有些痛苦，适合无声无息的忘记。当经历过，你成长了，自己知道就好。</li>
+  <li>人经常往上看，就会长高；老是低头捡便宜，就会驼背。</li>
+  <li><strong>只要脚还在地上，就别把自己看的太轻；只要还活在地球上，就别把自己看的太重</strong><之前一直不懂>。</之前一直不懂></li>
+  <li>面具若带得太久，就会长到脸上，想要揭下来，非得伤筋动骨扒皮不可。</li>
+  <li>休息是为了走更长更远的路；舍得才能获得，放下才能去烦，忘记才能心宁，宽容才能得众。</li>
+  <li>你怎样对别人，别人就会怎样对你，这是黄金定律！别人怎样对你，你就怎样对别人，这是白金法则！</li>
+  <li>身后的知识，才是最强大的靠山。</li>
+  <li>从对方的错误当中找出自己的责任，是彼此相爱的最好方法-威尔逊</li>
+  <li>无论你经历过多少挫折，战胜国多少困难，让自己变得多么强大，但这世上总有一两个人只要出现，就总能恶心到你。</li>
+  <li>我喜欢她是因为，我觉得她好，她什么都好。</li>
+  <li>重要的人越来越少，但留下的人越来越重要。</li>
+  <li>你的善良要留给那些懂得感恩的人，而不是那种将你的善良接受的理所应当且会欲求不满得寸进尺的贱人</li>
+  <li>上天不给我的，无论我十指怎样紧扣，仍然走漏；给我的，无论过去我怎么失手，都会拥有。–三毛</li>
+  <li><strong>有些事情，现在不做，以后估计再也不会做了</strong></li>
+  <li>在生命的长河中，总有一段经历让你终生难忘，总有一段情感让你刻骨铭心，总有一种理想让你永不放弃，总有一种力量让你奋然前行&lt;记得好像是一个高考作文题？&gt;</li>
+</ol>
+
+<blockquote>
+  <p>小兔子，还是什么兔子来着忘了</p>
+</blockquote>
+
+<p><img src="http://prometheuscx.github.io/img/User.jpg" alt="" /></p>
+
+<ol>
+  <li>即使是最难过的时候，也要告诉自己，坚强一点，马上就好啦。</li>
+  <li>虽然我们很渺小，但这不代表我们不能走远远的路，做大大的事。</li>
+  <li>生活没有彩排，每分每秒都是惊心动魄的现场直播。</li>
+  <li>如果我们总是通过外表来判定一个人或者一只兔子，该有多少人和兔子被误解呀。</li>
+  <li>在心情不好的时候，我总会深吸一口气，然后把厚厚的乌云吹走。</li>
+  <li>不管现在是大雨还是狂风，不论你现在迷惘还是悲伤，要相信，一切都会好起来的，我用我的长耳朵向你保证。</li>
+  <li>我每天都会记下那些开心的事情，不开心的时候拿出来看看，就像是阴天里的阳光银行。</li>
+  <li>人都会生病，心有时也会生病，但我们要勇敢，承认自己生病了才能好起来啊。</li>
+  <li>和你在一起的时候特别安心，就像带了合适的bra一样安心。</li>
+  <li>异地恋的最大问题嘛，就是说话的时候，你看不到我的想念，我也看不到你的悲伤。</li>
+  <li>有时候感觉自己被感情搞得手足无措，就像是一个温暖的泥沼。</li>
+  <li>我们总忙着东奔西走，忙着跟上潮流，忙着微博和朋友圈，却忘了停下来，跟对方说一声我爱你。</li>
+  <li>即使是最难过的时候，也要告诉自己，坚强一点，马上就好啦。</li>
+  <li><strong>改变总是很难，但不改变，其实更难。</strong></li>
+  <li>星期一要上班了，星期二还在怀念周末，周三表示好不适应上班，周四的时候一周过去一半啦 ，周五哎呀马上周末，周六嗯我得干点有意义的事情，周日啊妈妈妈妈妈呀又要上班了嘤嘤嘤：死循环。</li>
+  <li>我们能给对方最好的爱，就是感同身受，哪怕不能，做到理解，也就足够了。</li>
+  <li>世界上最好的最坏的最简单的最难的，就是耐心两个字啊。</li>
+  <li>有时回过头看看自己走过的路，也许会发现很多意想不到的事情呢。</li>
+  <li>遇到你，就像天上下牛奶雨一样，是一辈子都难得一见的惊喜。</li>
+  <li>生活总是琐碎又复杂，总有那么些日子，我不得不踮着脚尖走路生怕自己搞砸了什么。</li>
+  <li>你问我最难过的时候？没有最难过的时候，每次和你说再见都更难过一点。</li>
+  <li>爱人，就是那个你能在他面前，心安理得放屁的人。</li>
+  <li>生活中的大部分不开心，都可以通过多多拥抱爱的人来解决。</li>
+  <li>如果没有人抱我，那……就自己给自己一个大大的拥抱吧~</li>
+  <li><strong>相逢何必曾相识。但愿那时，我们相遇，在恰当的时机。恰好你来，恰好我在</strong>。</li>
+</ol>
+
+<p><img src="http://prometheuscx.github.io/img/life-lang/life_hope.jpg" alt="" /></p>
+
+<blockquote>
+  <p>累死了，摘了这么多，希望自己有所改变<a href="http://prometheuscx.github.io">Prometheuscx</a></p>
+</blockquote>
+
+
+
+                <hr>
+
+                
+
+
+                <ul class="pager">
+                    
+                    <li class="previous">
+                        <a href="/2015/12/16/java/" data-toggle="tooltip" data-placement="top" title="java小技巧之-Web项目导出为war包？「译」">&larr; Previous Post</a>
+                    </li>
+                    
+                    
+                    <li class="next">
+                        <a href="/2015/12/16/work-linux/" data-toggle="tooltip" data-placement="top" title="Linux Tomcat 常用命令">Next Post &rarr;</a>
+                    </li>
+                    
+                </ul>
+
+
+                
+
+                
+
+            </div>
+
+    <!-- Sidebar Container -->
+            <div class="
+                col-lg-8 col-lg-offset-2
+                col-md-10 col-md-offset-1
+                sidebar-container">
+
+                <!-- Featured Tags -->
+                
+                <section>
+                    <hr class="hidden-sm hidden-xs">
+                    <h5><a href="/tags/">FEATURED TAGS</a></h5>
+                    <div class="tags">
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+                            
+        				
+        			</div>
+                </section>
+                
+
+                <!-- Friends Blog -->
+                
+                <hr>
+                <h5>FRIENDS</h5>
+                <ul class="list-inline">
+                    
+                        <li><a href="http://www.huangxuan.me">Hux Blog<该博客模板出处></a></li>
+                    
+                </ul>
+                
+            </div>
+        </div>
+    </div>
+</article>
+
+
+
+
+
+
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+<!-- anchor-js, Doc:http://bryanbraun.github.io/anchorjs/ -->
+<script>
+    async("http://cdn.bootcss.com/anchor-js/1.1.1/anchor.min.js",function(){
+        anchors.options = {
+          visible: 'always',
+          placement: 'right',
+          icon: '#'
+        };
+        anchors.add().remove('.intro-header h1').remove('.subheading').remove('.sidebar-container h5');
+    })
+</script>
+<style>
+    /* place left on bigger screen */
+    @media all and (min-width: 800px) {
+        .anchorjs-link{
+            position: absolute;
+            left: -0.75em;
+            font-size: 1.1em;
+            margin-top : -0.1em;
+        }
+    }
+</style>
+
+
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+                <ul class="list-inline text-center">
+                    
+                    
+
+                    <!-- add Weibo, Zhihu by Hux, add target = "_blank" to <a> by Hux -->
+                    
+                    
+
+
+                    
+                    
+                    <li>
+                        <a target="_blank" href="https://github.com/Prometheuscx">
+                            <span class="fa-stack fa-lg">
+                                <i class="fa fa-circle fa-stack-2x"></i>
+                                <i class="fa fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+                <p class="copyright text-muted">
+                    Copyright &copy; Prometheuscx Blog 2015
+                    <br>
+                    Theme by <a href=" http://prometheuscx.github.io./">Prometheuscx</a> |
+                    <iframe
+                        style="margin-left: 2px; margin-bottom:-5px;"
+                        frameborder="0" scrolling="0" width="91px" height="20px"
+                        src="https://ghbtns.com/github-btn.html?user=Prometheuscx&repo=Prometheuscx.github.io&type=star&count=true" >
+                    </iframe>
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- jQuery -->
+<script src="/js/jquery.min.js "></script>
+
+<!-- Bootstrap Core JavaScript -->
+<script src="/js/bootstrap.min.js "></script>
+
+<!-- Custom Theme JavaScript -->
+<script src="/js/hux-blog.min.js "></script>
+
+
+<!-- async load function -->
+<script>
+    function async(u, c) {
+      var d = document, t = 'script',
+          o = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+      o.src = u;
+      if (c) { o.addEventListener('load', function (e) { c(null, e); }, false); }
+      s.parentNode.insertBefore(o, s);
+    }
+</script>
+
+<!-- Highlight.js -->
+<script>
+    async("http://cdn.bootcss.com/highlight.js/8.6/highlight.min.js", function(){
+        hljs.initHighlightingOnLoad();
+    })
+    // only load tagcloud.js in tag.html
+    if($('#tag_cloud').length !== 0){
+        async("/js/jquery.tagcloud.js",function(){
+            $.fn.tagcloud.defaults = {
+                //size: {start: 1, end: 1, unit: 'em'},
+                color: {start: '#bbbbee', end: '#0085a1'},
+            };
+            $('#tag_cloud a').tagcloud();
+        })
+    }
+</script>
+<link href="http://cdn.bootcss.com/highlight.js/8.6/styles/github.min.css" rel="stylesheet">
+
+<!--fastClick.js -->
+<script>
+    async("http://cdn.bootcss.com/fastclick/1.0.6/fastclick.min.js", function(){
+        var $nav = document.querySelector("nav");
+        if($nav) FastClick.attach($nav);
+    })
+</script>
+
+
+<!-- Google Analytics -->
+
+<script>
+    // dynamic User by Hux
+    var _gaId = 'UA-49627206-1';
+    var _gaDomain = 'http://prometheuscx.github.io./';
+
+    // Originial
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+    ga('create', _gaId, _gaDomain);
+    ga('send', 'pageview');
+</script>
+
+
+
+<!-- Baidu Tongji -->
+
+<script>
+    // dynamic User by Hux
+    var _baId = '4cc1f2d8f3067386cc5cdb626a202900';
+
+    // Originial
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?" + _baId;
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+</script>
+
+
+
+
+<!-- Image to hack wechat -->
+<img src="/img/icon_wechat.png" width="0" height="0" />
+<!-- Migrate from head to bottom, no longer block render and still work -->
+
+</body>
+
+</html>

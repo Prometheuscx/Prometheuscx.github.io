@@ -5,17 +5,822 @@
     <description>关于前端与设计、黑客与画家 | 黄玄，Web &amp; Mobile Lover，Front-End Engineer，UX Designer | 这里是 @Hux黄玄 的个人博客，与你一起发现更大的世界。</description>
     <link>http://prometheuscx.github.io.//</link>
     <atom:link href="http://prometheuscx.github.io.//feed.xml" rel="self" type="application/rss+xml" />
-    <pubDate>Wed, 16 Dec 2015 10:25:37 +0800</pubDate>
-    <lastBuildDate>Wed, 16 Dec 2015 10:25:37 +0800</lastBuildDate>
+    <pubDate>Mon, 21 Dec 2015 13:35:33 +0800</pubDate>
+    <lastBuildDate>Mon, 21 Dec 2015 13:35:33 +0800</lastBuildDate>
     <generator>Jekyll v3.0.1</generator>
     
       <item>
+        <title>tomcat-服务器性能优化 </title>
+        <description>&lt;p&gt;##增加JVM堆（heap）&lt;br /&gt;
+&amp;gt; 第一步  – 提高JVM栈内存Increase JVM heap memory&lt;/p&gt;
+
+&lt;p&gt;你使用过tomcat的话，简单的说就是“内存溢出”. 通常情况下，这种问题出现在实际的生产环境中.产生这种问题的原因是tomcat使用较少的内存给进程,通过配置TOmcat的配置文件(Windows 下的catalina.bat或Linux下的catalina.sh)可以解决这种问题.这种解决方法是通过增加JVM的栈内存实现的.也就是说，JVM通常不去调用垃圾回收器，所以服务器可以更多关注处理web请求，并要求尽快完成。要更改文件(catalina.sh) 位于”\tomcat server folder\bin\catalina.sh”，下面，给出这个文件的配置信息，&lt;/p&gt;
+
+&lt;p&gt;1    JAVA_OPTS=”-Djava.awt.headless=true -Dfile.encoding=UTF-8&lt;/p&gt;
+
+&lt;p&gt;2    -server -Xms1024m -Xmx1024m&lt;/p&gt;
+
+&lt;p&gt;3    -XX:NewSize=512m -XX:MaxNewSize=512m -XX:PermSize=512m&lt;/p&gt;
+
+&lt;p&gt;4    -XX:MaxPermSize=512m -XX:+DisableExplicitGC”&lt;/p&gt;
+
+&lt;p&gt;-Xms – 指定初始化时化的栈内存-Xmx – 指定最大栈内存在重启你的Tomcat服务器之后，这些配置的更改才会有效。下面将介绍如何处理JRE内存泄漏.&lt;/p&gt;
+
+&lt;p&gt;##解决内存泄漏问题线&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;解决JRE内存泄漏&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;另一个影响Tomcat 性能的因素是内存泄露,就像我前面提及的,可以通过更新到最新版本的Tomcat来获得较好性能和可扩展性.现在这句话将成为事实。如果我们使用最新的 tomcat 服务器版本6.0.26 或更高版本，可以解决此类错误。因为它包含一个监听器来处理 JRE 和 permgen 内存泄漏。这里使用的监听器是，&lt;/p&gt;
+
+&lt;p&gt;1    &lt;code&gt;&amp;lt;Listener className=&quot;org.apache.catalina.core.JreMemoryLeakPreventionListener&quot; /&amp;gt;&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;你可以找到上述监听器类配置文件 server.xml 在”tomcat project folder/conf/server.xml”中的。下一步我们将介绍如何调整连接器属性”maxThreads”&lt;/p&gt;
+
+&lt;p&gt;##程池（thread pool）的设置&lt;br /&gt;
+&amp;gt; 线程池设置&lt;/p&gt;
+
+&lt;p&gt;线程池指定Web请求负载的数量，因此，为获得更好的性能这部分应小心处理。可以通过调整连接器属性“maxThreads”完成设置。maxThreads的值应该根据流量的大小，如果值过低，将有没有足够的线程来处理所有的请求，请求将进入等待状态，只有当一个的处理线程释放后才被处理；如果设置的太大，Tomcat的启动将花费更多时间。因此它取决于我们给maxThreads设置一个正确的值。&lt;/p&gt;
+
+&lt;p&gt;`&lt;/p&gt;
+&lt;connector port=&quot;8080&quot; address=&quot;localhost&quot; maxthreads=&quot;250&quot; maxhttpheadersize=&quot;8192&quot; emptysessionpath=&quot;true&quot; protocol=&quot;HTTP/1.1&quot; enablelookups=&quot;false&quot; redirectport=&quot;8181&quot; acceptcount=&quot;100&quot; connectiontimeout=&quot;20000&quot; disableuploadtimeout=&quot;true&quot; /&gt;
+
+&lt;p&gt;`&lt;/p&gt;
+
+&lt;p&gt;在上述配置中，maxThreads值设定为“250”，这指定可以由服务器处理的并发请求的最大数量。如果没有指定，这个属性的默认值为“200”。任何多出的并发请求将收到“拒绝连接”的错误提示，直到另一个处理请求进程被释放。错误看起来如下，&lt;/p&gt;
+
+&lt;p&gt;1    &lt;code&gt;org.apache.tomcat.util.threads.ThreadPool logFull SEVERE: All threads (250) are&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;2    &lt;code&gt;currently busy, waiting. Increase maxThreads (250) or check the servlet status&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;如果应用提示上述错误，务必检查上述错误是否是由于单个请求花费太长时间造成的，这个问题的原因是这样的，有时候如果数据库连接不释放的话，进程将不会处理其它请求。&lt;/p&gt;
+
+&lt;p&gt;注意: 如果请求的数量超过了&lt;code&gt;“750”&lt;/code&gt;，这将不是意味着将maxThreads属性值设置为“750”，它意外着最好使用“Tomcat集群”的多个实例。也就是说，如果有“1000”请求，两个Tomcat实例设置“&lt;strong&gt;maxThreads&lt;/strong&gt;= 500”，而不在单Tomcat实例的情况下设置&lt;strong&gt;maxThreads=1000&lt;/strong&gt;。 根据我的经验，准确值的设定可以通过将应用在在各种环境中测试得出。接下来，我们来看看如何压缩的&lt;strong&gt;MIME&lt;/strong&gt;类型。&lt;/p&gt;
+
+&lt;p&gt;##压缩&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;压缩&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Tomcat有一个通过在server.xml配置文件中设置压缩的选项。压缩可以在connector像如下设置中完成，&lt;/p&gt;
+
+&lt;p&gt;1    &lt;code&gt;&amp;lt;Connector port=&quot;8080&quot; protocol=&quot;HTTP/1.1&quot;    &lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;2   ` connectionTimeout=”20000”`&lt;/p&gt;
+
+&lt;p&gt;3   ` redirectPort=”8181” compression=”500” `&lt;/p&gt;
+
+&lt;p&gt;4    &lt;code&gt;compressableMimeType=&quot;text/html,text/xml,text/plain,application/octet-stream&quot; /&amp;gt;    &lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;在前面的配置中，当文件的大小大于等于&lt;strong&gt;500bytes&lt;/strong&gt;时才会压缩。如果当文件达到了大小但是却没有被压缩，那么设置属性&lt;strong&gt;compression=”on”&lt;/strong&gt;。否则Tomcat默认设置是“off”。接下来我们将看看如何调优数据库。&lt;/p&gt;
+
+&lt;p&gt;##调节数据库性能&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;数据库性能调优&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Tomcat性能在等待数据库查询被执行期间会降低。如今大多数应用程序都是使用可能包含“命名查询”的关系型数据库。如果是那样的话，Tomcat会在启动时默认加载命名查询，这个可能会提升性能。另一件重要事是确保所有数据库连接正确地关闭。给数据库连接池设置正确值也是十分重要的。我所说的值是指Resource要素的最大空闲数（&lt;strong&gt;maxIdle&lt;/strong&gt;），最大连接数（&lt;strong&gt;maxActive&lt;/strong&gt;）,最大建立连接等待时间（&lt;strong&gt;maxWait&lt;/strong&gt;）属性的值。因为配置依赖与应用要求，我也不能在本文指定正确的值。你可以通过调用数据库性能测试来找到正确的值&lt;/p&gt;
+
+&lt;p&gt;##Tomcat原生库（native library）&lt;br /&gt;
+&amp;gt; Tomcat原生库&lt;/p&gt;
+
+&lt;p&gt;Tomcat的原生库基于Apache可移植运行时（Apache Portable Runtime简称APR），给程序员提供了超强的扩展性和性能，在产品运作中帮助融合原生的服务器技术以展现最佳的性能。想知道安装说明的朋友请参考Tomcat Native Library – (APR) Installation。&lt;/p&gt;
+
+&lt;p&gt;##其他选项&lt;/p&gt;
+
+&lt;p&gt;开启浏览器的缓存，这样读取存放在webapps文件夹里的静态内容会更快，大大推动整体性能。每当开机时，Tomcat服务器应当自动地重启。一般情况下HTTPS请求会比HTTP请求慢。如果你想要更好的安全性，即使慢一点我们还是要选择HTTPS。&lt;/p&gt;
+
+</description>
+        <pubDate>Mon, 21 Dec 2015 00:00:00 +0800</pubDate>
+        <link>http://prometheuscx.github.io.//2015/12/21/tomcat/</link>
+        <guid isPermaLink="true">http://prometheuscx.github.io.//2015/12/21/tomcat/</guid>
+        
+        <category>Tomcat</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>IDEA 常用快捷键</title>
+        <description>&lt;p&gt;&lt;strong&gt;IntelliJ Idea 常用快捷键列表&lt;/strong&gt;&lt;/p&gt;
+
+&lt;p&gt;Alt+回车 导入包,自动修正&lt;br /&gt;
+Ctrl+N   查找类&lt;br /&gt;
+Ctrl+Shift+N 查找文件&lt;br /&gt;
+Ctrl+Alt+L  格式化代码&lt;br /&gt;
+Ctrl＋Alt＋T可以把代码包在一块内，例如try/catch&lt;br /&gt;
+Alt＋Up and Alt＋Down 可在方法间快速移动&lt;br /&gt;
+Ctrl＋Alt＋B 可以跳转到抽象方法的实现&lt;br /&gt;
+Ctrl + G  可以快速移动到指定行&lt;br /&gt;
+Ctrl+E 最近打开的文件&lt;br /&gt;
+Ctrl+Shift+Up/Down 代码向上/下移动。&lt;/p&gt;
+
+&lt;p&gt;Ctrl+W 选中代码，连续按会有其他效果&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Alt+O 优化导入的类和包&lt;br /&gt;
+Alt+Insert 生成代码(如get,set方法,构造函数等)&lt;br /&gt;
+Ctrl+E或者Alt+Shift+C  最近更改的代码&lt;br /&gt;
+Ctrl+R 替换文本&lt;/p&gt;
+
+&lt;p&gt;Ctrl+F 查找文本&lt;br /&gt;
+Ctrl+Shift+Space 自动补全代码&lt;br /&gt;
+Ctrl+空格 代码提示&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Alt+Space 类名或接口名提示&lt;/p&gt;
+
+&lt;p&gt;Ctrl+P 方法参数提示&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Shift+Alt+N 查找类中的方法或变量&lt;/p&gt;
+
+&lt;p&gt;Alt+Shift+C 对比最近修改的代码&lt;/p&gt;
+
+&lt;p&gt;Shift+F6  重构-重命名&lt;br /&gt;
+Ctrl+Shift+先上键&lt;br /&gt;
+Ctrl+X 删除行&lt;br /&gt;
+Ctrl+D 复制行&lt;br /&gt;
+Ctrl+/ 或 Ctrl+Shift+/  注释（// 或者/&lt;em&gt;…&lt;/em&gt;/ ）&lt;br /&gt;
+Ctrl+J  自动代码&lt;br /&gt;
+Ctrl＋P，可以显示参数信息&lt;/p&gt;
+
+&lt;p&gt;Ctrl+H 显示类结构图&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Q 显示注释文档&lt;br /&gt;
+Alt+F1 查找代码所在位置&lt;br /&gt;
+Alt+1 快速打开或隐藏工程面板&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Alt+ left/right 返回至上次浏览的位置&lt;br /&gt;
+Alt+ left/right 切换代码视图&lt;/p&gt;
+
+&lt;p&gt;Alt+ Up/Down 在方法间快速移动定位&lt;/p&gt;
+
+&lt;p&gt;F2 或Shift+F2 高亮错误或警告快速定位&lt;/p&gt;
+
+&lt;p&gt;代码标签输入完成后，按Tab，生成代码。&lt;/p&gt;
+
+&lt;p&gt;选中文本，按Ctrl+Shift+F7 ，高亮显示所有该文本，按Esc高亮消失。&lt;/p&gt;
+
+&lt;p&gt;选中文本，按Alt+F3 ，逐个往下查找相同文本，并高亮显示。&lt;/p&gt;
+
+&lt;p&gt;Ctrl+Up/Down 光标跳转到第一行或最后一行下&lt;/p&gt;
+
+&lt;p&gt;Ctrl+B 快速打开光标处的类或方法&lt;/p&gt;
+
+&lt;p&gt;1 智能提示&lt;/p&gt;
+
+&lt;p&gt;Intellij首当其冲的当然就是Intelligence智能！基本的代码提示用Ctrl+Space，还有更智能地按类型信息提示Ctrl+Shift+Space，但因为Intellij总是随着我们敲击而自动提示，所以很多时候都不会手动敲这两个快捷键(除非提示框消失了)。用F2/ Shift+F2移动到有错误的代码，Alt+Enter快速修复(即Eclipse中的Quick Fix功能)。当智能提示为我们自动补全方法名时，我们通常要自己补上行尾的反括号和分号，当括号嵌套很多层时会很麻烦，这时我们只需敲Ctrl+Shift+Enter就能自动补全末尾的字符。而且不只是括号，例如敲完if/for时也可以自动补上{}花括号。&lt;/p&gt;
+
+&lt;p&gt;最后要说一点，Intellij能够智能感知Spring、Hibernate等主流框架的配置文件和类，以静制动，在看似“静态”的外表下，智能地扫描理解你的项目是如何构造和配置的。&lt;/p&gt;
+
+&lt;p&gt;2 重构&lt;/p&gt;
+
+&lt;p&gt;Intellij重构是另一完爆Eclipse的功能，其智能程度令人瞠目结舌，比如提取变量时自动检查到所有匹配同时提取成一个变量等。尤其看过《重构-改善既有代码设计》之后，有了Intellij的配合简直是令人大呼过瘾！也正是强大的智能和重构功能，使Intellij下的TDD开发非常顺畅。&lt;/p&gt;
+
+&lt;p&gt;切入正题，先说一个无敌的重构功能大汇总快捷键Ctrl+Shift+Alt+T，叫做Refactor This。按法有点复杂，但也符合Intellij的风格，很多快捷键都要双手完成，而不像Eclipse不少最有用的快捷键可以潇洒地单手完成(不知道算不算Eclipse的一大优点)，但各位用过Emacs的话就会觉得也没什么了(非Emacs黑)。此外，还有些最常用的重构技巧，因为太常用了，若每次都在Refactor This菜单里选的话效率有些低。比如Shift+F6直接就是改名，Ctrl+Alt+V则是提取变量。&lt;/p&gt;
+
+&lt;p&gt;3 代码生成&lt;/p&gt;
+
+&lt;p&gt;这一点类似Eclipse，虽不是独到之处，但因为日常使用频率极高，所以还是罗列在榜单前面。常用的有fori/sout/psvm+Tab即可生成循环、System.out、main方法等boilerplate样板代码，用Ctrl+J可以查看所有模板。后面“辅助”一节中将会讲到Alt+Insert，在编辑窗口中点击可以生成构造函数、toString、getter/setter、重写父类方法等。这两个技巧实在太常用了，几乎每天都要生成一堆main、System.out和getter/setter。&lt;/p&gt;
+
+&lt;p&gt;另外，Intellij IDEA 13中加入了后缀自动补全功能(Postfix Completion)，比模板生成更加灵活和强大。例如要输入for(User user : users)只需输入user.for+Tab。再比如，要输入Date birthday = user.getBirthday();只需输入user.getBirthday().var+Tab即可。&lt;/p&gt;
+
+&lt;p&gt;4 编辑&lt;/p&gt;
+
+&lt;p&gt;编辑中不得不说的一大神键就是能够自动按语法选中代码的Ctrl+W以及反向的Ctrl+Shift+W了。此外，Ctrl+Left/Right移动光标到前/后单词，Ctrl+[/]移动到前/后代码块，这些类Vim风格的光标移动也是一大亮点。以上Ctrl+Left/Right/[]加上Shift的话就能选中跳跃范围内的代码。Alt+Forward/Backward移动到前/后方法。还有些非常普通的像Ctrl+Y删除行、Ctrl+D复制行、Ctrl+&amp;lt;/&amp;gt;折叠代码就不多说了。&lt;/p&gt;
+
+&lt;p&gt;关于光标移动再多扩展一点，除了Intellij本身已提供的功能外，我们还可以安装ideaVim或者emacsIDEAs享受到Vim的快速移动和Emacs的AceJump功能(超爽！)。另外，Intellij的书签功能也是不错的，用Ctrl+Shift+Num定义1-10书签(再次按这组快捷键则是删除书签)，然后通过Ctrl+Num跳转。这避免了多次使用前/下一编辑位置Ctrl+Left/Right来回跳转的麻烦，而且此快捷键默认与Windows热键冲突(默认多了Alt，与Windows改变显示器显示方向冲突，一不小心显示器就变成倒着显式的了，冏啊)。&lt;/p&gt;
+
+&lt;p&gt;5 查找打开&lt;/p&gt;
+
+&lt;p&gt;类似Eclipse，Intellij的Ctrl+N/Ctrl+Shift+N可以打开类或资源，但Intellij更加智能一些，我们输入的任何字符都将看作模糊匹配，省却了Eclipse中还有输入*的麻烦。最新版本的IDEA还加入了Search Everywhere功能，只需按Shift+Shift即可在一个弹出框中搜索任何东西，包括类、资源、配置项、方法等等。&lt;/p&gt;
+
+&lt;p&gt;类的继承关系则可用Ctrl+H打开类层次窗口，在继承层次上跳转则用Ctrl+B/Ctrl+Alt+B分别对应父类或父方法定义和子类或子方法实现，查看当前类的所有方法用Ctrl+F12。&lt;/p&gt;
+
+&lt;p&gt;要找类或方法的使用也很简单，Alt+F7。要查找文本的出现位置就用Ctrl+F/Ctrl+Shift+F在当前窗口或全工程中查找，再配合F3/Shift+F3前后移动到下一匹配处。&lt;/p&gt;
+
+&lt;p&gt;Intellij更加智能的又一佐证是在任意菜单或显示窗口，都可以直接输入你要找的单词，Intellij就会自动为你过滤。&lt;/p&gt;
+
+&lt;p&gt;6 其他辅助&lt;/p&gt;
+
+&lt;p&gt;以上这些神键配上一些辅助快捷键，即可让你的双手90%以上的时间摆脱鼠标，专注于键盘仿佛在进行钢琴表演。这些不起眼却是至关重要的最后一块拼图有：&lt;/p&gt;
+
+&lt;p&gt;Ø  命令：Ctrl+Shift+A可以查找所有Intellij的命令，并且每个命令后面还有其快捷键。所以它不仅是一大神键，也是查找学习快捷键的工具。&lt;/p&gt;
+
+&lt;p&gt;Ø  新建：Alt+Insert可以新建类、方法等任何东西。&lt;/p&gt;
+
+&lt;p&gt;Ø  格式化代码：格式化import列表Ctrl+Alt+O，格式化代码Ctrl+Alt+L。&lt;/p&gt;
+
+&lt;p&gt;Ø  切换窗口：Alt+Num，常用的有1-项目结构，3-搜索结果，4/5-运行调试。Ctrl+Tab切换标签页，Ctrl+E/Ctrl+Shift+E打开最近打开过的或编辑过的文件。&lt;/p&gt;
+
+&lt;p&gt;Ø  单元测试：Ctrl+Shift+T创建单元测试用例。&lt;/p&gt;
+
+&lt;p&gt;Ø  运行：Alt+Shift+F10运行程序，Shift+F9启动调试，Ctrl+F2停止。&lt;/p&gt;
+
+&lt;p&gt;Ø  调试：F7/F8/F9分别对应Step into，Step over，Continue。&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;此外还有些我自定义的，例如水平分屏Ctrl+&lt;/td&gt;
+      &lt;td&gt;等，和一些神奇的小功能Ctrl+Shift+V粘贴很早以前拷贝过的，Alt+Shift+Insert进入到列模式进行按列选中。&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;7 最终榜单&lt;/p&gt;
+
+&lt;p&gt;这榜单阵容太豪华了，后几名都是如此有用，毫不示弱。&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #10切来切去：Ctrl+Tab&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #9选你所想：Ctrl+W&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #8代码生成：Template/Postfix +Tab&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #7发号施令：Ctrl+Shift+A&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #6无处藏身：Shift+Shift&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #5自动完成：Ctrl+Shift+Enter&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #4创造万物：Alt+Insert&lt;/p&gt;
+
+&lt;p&gt;太难割舍，前三名并列吧！&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #1智能补全：Ctrl+Shift+Space&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #1自我修复：Alt+Enter&lt;/p&gt;
+
+&lt;p&gt;Ø  Top #1重构一切：Ctrl+Shift+Alt+T&lt;/p&gt;
+</description>
+        <pubDate>Thu, 17 Dec 2015 00:00:00 +0800</pubDate>
+        <link>http://prometheuscx.github.io.//2015/12/17/IDEA/</link>
+        <guid isPermaLink="true">http://prometheuscx.github.io.//2015/12/17/IDEA/</guid>
+        
+        <category>IDEA</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>Linux Tomcat 常用命令</title>
+        <description>&lt;p&gt;工作中总少不了与服务器打交道，那么问题来了，现在服务器都在部署在linux上面，然而linux与windows差异较大，所以掌握一些常见的linux命令是很重要滴。&lt;/p&gt;
+
+&lt;p&gt;常用指令&lt;/p&gt;
+
+&lt;p&gt;ls　　             显示文件或目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  -l              列出文件详细信息l(list)
+
+  -a             列出当前目录下所有文件及目录，包括隐藏的a(all)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;mkdir             创建目录&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;  -p            创建目录，若无父目录，则创建p(parent)
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;cd                 切换目录&lt;/p&gt;
+
+&lt;p&gt;touch             创建空文件&lt;/p&gt;
+
+&lt;p&gt;echo              创建带有内容的文件。&lt;/p&gt;
+
+&lt;p&gt;cat                查看文件内容&lt;/p&gt;
+
+&lt;p&gt;cp                 拷贝&lt;/p&gt;
+
+&lt;p&gt;mv                移动或重命名&lt;/p&gt;
+
+&lt;p&gt;rm                删除文件&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; -r            递归删除，可删除子目录及文件
+
+ -f            强制删除
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;find              在文件系统中搜索某文件&lt;/p&gt;
+
+&lt;p&gt;wc                统计文本中行数、字数、字符数&lt;/p&gt;
+
+&lt;p&gt;grep             在文本文件中查找某个字符串&lt;/p&gt;
+
+&lt;p&gt;rmdir           删除空目录&lt;/p&gt;
+
+&lt;p&gt;tree             树形结构显示目录，需要安装tree包&lt;/p&gt;
+
+&lt;p&gt;pwd              显示当前目录&lt;/p&gt;
+
+&lt;p&gt;ln                  创建链接文件&lt;/p&gt;
+
+&lt;p&gt;more、less   分页显示文本文件内容&lt;/p&gt;
+
+&lt;p&gt;head、tail    显示文件头、尾内容&lt;/p&gt;
+
+&lt;p&gt;ctrl+alt+F1    命令行全屏模式&lt;/p&gt;
+
+&lt;p&gt;系统管理命令&lt;/p&gt;
+
+&lt;p&gt;stat               显示指定文件的详细信息，比ls更详细&lt;/p&gt;
+
+&lt;p&gt;who               显示在线登陆用户&lt;/p&gt;
+
+&lt;p&gt;whoami          显示当前操作用户&lt;/p&gt;
+
+&lt;p&gt;hostname       显示主机名&lt;/p&gt;
+
+&lt;p&gt;uname            显示系统信息&lt;/p&gt;
+
+&lt;p&gt;top                 动态显示当前耗费资源最多进程信息&lt;/p&gt;
+
+&lt;p&gt;ps                   显示瞬间进程状态 ps -aux&lt;/p&gt;
+
+&lt;p&gt;du                   查看目录大小 du -h /home带有单位显示目录信息&lt;/p&gt;
+
+&lt;p&gt;df                   查看磁盘大小 df -h 带有单位显示磁盘信息&lt;/p&gt;
+
+&lt;p&gt;ifconfig          查看网络情况&lt;/p&gt;
+
+&lt;p&gt;ping                测试网络连通&lt;/p&gt;
+
+&lt;p&gt;netstat          显示网络状态信息&lt;/p&gt;
+
+&lt;p&gt;man                命令不会用了，找男人  如：man ls&lt;/p&gt;
+
+&lt;p&gt;clear              清屏&lt;/p&gt;
+
+&lt;p&gt;alias               对命令重命名 如：alias showmeit=”ps -aux” ，另外解除使用unaliax showmeit&lt;/p&gt;
+
+&lt;p&gt;kill                 杀死进程，可以先用ps 或 top命令查看进程的id，然后再用kill命令杀死进程。&lt;/p&gt;
+
+&lt;p&gt;打包压缩相关命令&lt;/p&gt;
+
+&lt;p&gt;gzip&lt;/p&gt;
+
+&lt;p&gt;：&lt;/p&gt;
+
+&lt;p&gt;bzip2&lt;/p&gt;
+
+&lt;p&gt;：&lt;/p&gt;
+
+&lt;dl&gt;
+  &lt;dt&gt;tar&lt;/dt&gt;
+  &lt;dd&gt;
+    &lt;p&gt;打包压缩&lt;/p&gt;
+  &lt;/dd&gt;
+&lt;/dl&gt;
+
+&lt;pre&gt;&lt;code&gt;   -c              归档文件
+
+   -x              压缩文件
+
+   -z              gzip压缩文件
+
+   -j              bzip2压缩文件
+
+   -v              显示压缩或解压缩过程 v(view)
+
+   -f              使用档名
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;例：&lt;/p&gt;
+
+&lt;p&gt;tar -cvf /home/abc.tar /home/abc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;         只打包，不压缩
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;tar -zcvf /home/abc.tar.gz /home/abc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;   打包，并用gzip压缩
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;tar -jcvf /home/abc.tar.bz2 /home/abc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt; 打包，并用bzip2压缩
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;当然，如果想解压缩，就直接替换上面的命令  tar -cvf  / tar -zcvf  / tar -jcvf 中的“c” 换成“x” 就可以了。&lt;/p&gt;
+
+&lt;p&gt;关机/重启机器&lt;/p&gt;
+
+&lt;p&gt;shutdown&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;   -r             关机重启
+
+   -h             关机不重启
+
+   now          立刻关机
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;halt               关机&lt;/p&gt;
+
+&lt;p&gt;reboot          重启&lt;/p&gt;
+
+&lt;p&gt;Linux管道&lt;/p&gt;
+
+&lt;p&gt;将一个命令的标准输出作为另一个命令的标准输入。也就是把几个命令组合起来使用，后一个命令除以前一个命令的结果。&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;例：grep -r “close” /home/*&lt;/td&gt;
+      &lt;td&gt;more&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;pre&gt;&lt;code&gt;  在home目录下所有文件中查找，包括close的文件，并分页输出。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;Linux软件包管理&lt;/p&gt;
+
+&lt;p&gt;dpkg&lt;/p&gt;
+
+&lt;p&gt;(Debian Package)管理工具，软件包名以.deb后缀。这种方法适合系统不能联网的情况下。&lt;/p&gt;
+
+&lt;p&gt;比如安装tree命令的安装包，先将tree.deb传到Linux系统中。再使用如下命令安装。&lt;/p&gt;
+
+&lt;p&gt;sudo dpkg -i tree_1.5.3-1_i386.deb&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;    安装软件
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;sudo dpkg -r tree&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                                卸载软件
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;注：将tree.deb传到Linux系统中，有多种方式。VMwareTool，使用挂载方式；使用winSCP工具等；&lt;/p&gt;
+
+&lt;p&gt;APT&lt;/p&gt;
+
+&lt;p&gt;（Advanced Packaging Tool）高级软件工具。这种方法适合系统能够连接互联网的情况。&lt;/p&gt;
+
+&lt;p&gt;依然以tree为例&lt;/p&gt;
+
+&lt;p&gt;sudo apt-get install tree&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                    安装tree
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;sudo apt-get remove tree&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                  卸载tree
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;sudo apt-get update&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;                            更新软件
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;sudo apt-get upgrade&lt;/p&gt;
+
+&lt;p&gt;将.rpm&lt;/p&gt;
+
+&lt;p&gt;文件转为.deb文件&lt;/p&gt;
+
+&lt;p&gt;.rpm为RedHat使用的软件格式。在Ubuntu下不能直接使用，所以需要转换一下。&lt;/p&gt;
+
+&lt;p&gt;sudo alien abc.rpm&lt;/p&gt;
+
+&lt;p&gt;vim使用&lt;/p&gt;
+
+&lt;p&gt;vim三种模式：命令模式&lt;/p&gt;
+
+&lt;p&gt;、插入模式、编辑模式。使用ESC或i或：来切换模式。&lt;/p&gt;
+
+&lt;p&gt;命令模式下：&lt;/p&gt;
+
+&lt;p&gt;:q                      退出&lt;/p&gt;
+
+&lt;p&gt;:q!                     强制退出&lt;/p&gt;
+
+&lt;p&gt;:wq                   保存并退出&lt;/p&gt;
+
+&lt;p&gt;:set number     显示行号&lt;/p&gt;
+
+&lt;p&gt;:set nonumber  隐藏行号&lt;/p&gt;
+
+&lt;p&gt;/apache            在文档中查找apache 按n跳到下一个，shift+n上一个&lt;/p&gt;
+
+&lt;p&gt;yyp                   复制光标所在行，并粘贴&lt;/p&gt;
+
+&lt;p&gt;h(左移一个字符←)、j(下一行↓)、k(上一行↑)、l(右移一个字符→)&lt;/p&gt;
+
+&lt;p&gt;用户及用户组管理&lt;/p&gt;
+
+&lt;p&gt;/etc/passwd&lt;/p&gt;
+
+&lt;p&gt;存储用户账号&lt;/p&gt;
+
+&lt;p&gt;/etc/group存储组账号&lt;/p&gt;
+
+&lt;p&gt;/etc/shadow&lt;/p&gt;
+
+&lt;p&gt;存储用户账号的密码&lt;/p&gt;
+
+&lt;p&gt;/etc/gshadow&lt;/p&gt;
+
+&lt;p&gt;存储用户组账号的密码&lt;/p&gt;
+
+&lt;p&gt;useradd  用户名&lt;/p&gt;
+
+&lt;p&gt;userdel   用户名&lt;/p&gt;
+
+&lt;p&gt;adduser    用户名&lt;/p&gt;
+
+&lt;p&gt;groupadd   组名&lt;/p&gt;
+
+&lt;p&gt;groupdel       组名&lt;/p&gt;
+
+&lt;p&gt;passwd root   给root设置密码&lt;/p&gt;
+
+&lt;p&gt;su root&lt;/p&gt;
+
+&lt;p&gt;su – root&lt;/p&gt;
+
+&lt;p&gt;/etc/profile&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;系统环境变量
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;bash_profile&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;用户环境变量
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;.bashrc&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;         用户环境变量
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;su user&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;         切换用户，加载配置文件.bashrc
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;su – user&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;       切换用户，加载配置文件/etc/profile ，加载bash_profile
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;p&gt;更改文件的用户及用户组&lt;/p&gt;
+
+&lt;table&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;td&gt;sudo chown [-R] owner[:group] {File&lt;/td&gt;
+      &lt;td&gt;Directory}&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;p&gt;例如：还以jdk-7u21-linux-i586.tar.gz为例。属于用户hadoop，组hadoop&lt;/p&gt;
+
+&lt;p&gt;要想切换此文件所属的用户及组。可以使用命令。&lt;/p&gt;
+
+&lt;p&gt;sudo chown root:root jdk-7u21-linux-i586.tar.gz&lt;/p&gt;
+
+&lt;p&gt;文件权限管理&lt;/p&gt;
+
+&lt;p&gt;三种基本权限&lt;/p&gt;
+
+&lt;p&gt;R           读         数值表示为4&lt;/p&gt;
+
+&lt;p&gt;W          写         数值表示为2&lt;/p&gt;
+
+&lt;p&gt;X           可执行  数值表示为1&lt;/p&gt;
+
+&lt;p&gt;如图所示，jdk-7u21-linux-i586.tar.gz文件的权限为-rw-rw-r–&lt;/p&gt;
+
+&lt;p&gt;-rw-rw-r–&lt;/p&gt;
+
+&lt;p&gt;一共十个字符，分成四段。&lt;/p&gt;
+
+&lt;p&gt;第一个字符“-”表示普通文件；这个位置还可能会出现“l”链接；“d”表示目录&lt;/p&gt;
+
+&lt;p&gt;第二三四个字符“rw-”表示当前所属用户的权限。   所以用数值表示为4+2=6&lt;/p&gt;
+
+&lt;p&gt;第五六七个字符“rw-”表示当前所属组的权限。      所以用数值表示为4+2=6&lt;/p&gt;
+
+&lt;p&gt;第八九十个字符“r–”表示其他用户权限。              所以用数值表示为2&lt;/p&gt;
+
+&lt;p&gt;所以操作此文件的权限用数值表示为662&lt;/p&gt;
+
+&lt;p&gt;更改权限&lt;/p&gt;
+
+&lt;p&gt;sudo chmod [u所属用户  g所属组  o其他用户  a所有用户]  [+增加权限  -减少权限]  [r  w  x]   目录名&lt;/p&gt;
+
+&lt;p&gt;例如：有一个文件filename，权限为“-rw-r—-x” ,将权限值改为”-rwxrw-r-x”，用数值表示为765&lt;/p&gt;
+
+&lt;p&gt;sudo chmod u+x g+w o+r  filename&lt;/p&gt;
+
+&lt;p&gt;上面的例子可以用数值表示&lt;/p&gt;
+
+&lt;p&gt;sudo chmod 765 filename&lt;/p&gt;
+
+&lt;p&gt;工作中用到的一些有意思的命令：&lt;/p&gt;
+
+&lt;p&gt;linux    nc      tree&lt;/p&gt;
+
+</description>
+        <pubDate>Wed, 16 Dec 2015 00:00:00 +0800</pubDate>
+        <link>http://prometheuscx.github.io.//2015/12/16/work-linux/</link>
+        <guid isPermaLink="true">http://prometheuscx.github.io.//2015/12/16/work-linux/</guid>
+        
+        <category>Linux</category>
+        
+        
+      </item>
+    
+      <item>
+        <title>成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！</title>
+        <description>&lt;p&gt;关注”自由企业家”很久了，久而久之，就习惯了从上面摘录一些自己喜欢的句子，文字，确实被它影响了好多，是我一路上的良师益友&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;尽量少干两件事：用自己的嘴干扰别人的生活，靠别人的脑子思考自己的人生&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;并不是所有的痛，都可以呐喊，也不是所有的爱，都可以表白，不要过分展现你的悲伤，因为，谁都没有比谁生活的容易。&lt;/p&gt;
+  &lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://prometheuscx.github.io/img/life-lang/life_love.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;世上最好的保鲜就是不断进步，让自己成为一个更好和更值得爱的人。&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;在你最需要安慰的时候，一句“我在”，是这个世界上最温暖的力量。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;一个成功男人永远也不会嫌弃自己的女人太优秀，除非他驾驭不了！就像一个女人永远不会嫌弃一件衣服太漂亮，除非她穿不上或买不起！&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;有时候，恰恰是你不经意的一句话，就成了朋友心里一直温暖的火焰。这种感动，往往不经意，才更加动容。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;这辈子，和谁过、怎样过、过多久，有人因为爱情、有人因为物质、有人因为容貌、有人因为前途、有人因为压力…….而当这日子真的要和选择的人一起过了，你才明白：钱够花就好，容貌不吓人就行。其实真正的幸福很简单：只要笑容比眼泪多，你就找对人了。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;你要努力，你想要的，只能你自己给；别人给的，你要问问自己，拿得起么。&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;等脚已定型，心也定性的时候，再找一双适合自己的鞋，鞋子不一定要别人看起来高大上，只需在经历风雨泥泞之后仍然不脱帮掉底便好&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;不自卑的表现，听不懂就问到底是啥，买不起就说有些贵，配不上就说那就算了。但是大多数人，都是听不懂也点点头，买不起说不稀罕，配不上说不过随便玩玩。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;我现在主要做两件事：一是让自己变得更好，二是等待更好的你到来。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;让人产生巨大动力的，往往是些细微的小事。被雨敲湿的肩膀，熨烫平整的衬衣，阳光打亮的微笑，凌晨六点的空气，母亲说再见时的哽咽，身边人的一声叹息。因为生活就是这些小事。因为在乎，所以有动力。&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;成功从来都不是击败别人，而是改变自己&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;一个不愿付出、不愿冒风险的人，一事无成对他来说是再自然不过的事&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;让人觉得你可有可无，你被踢开的日子就不远了&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;
+    &lt;p&gt;&lt;strong&gt;你连追求自己喜欢的事物与人的勇气都没有，你注定是个失败者&lt;/strong&gt;&lt;/p&gt;
+  &lt;/li&gt;
+  &lt;li&gt;如果你希望一切，都能变得更加美好，就从改变自己开始。&lt;/li&gt;
+  &lt;li&gt;现在你最不想做的，其实是你最好的选择&lt;/li&gt;
+  &lt;li&gt;不要去计算时间，让时间来证明一切&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://prometheuscx.github.io/img/life-lang/life_pro.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;&lt;strong&gt;要么健身、要么读书，身体和灵魂，必须有一个在路上&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;生活从未变得轻松，是你在一点一点变强大&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;对生命而言，接纳才是最好的温柔，无论是接纳一个人的出现，还是接纳一个人的从此不见。&lt;/li&gt;
+  &lt;li&gt;生活累，一小半源于生存，一大半源于攀比。&lt;/li&gt;
+  &lt;li&gt;人生没有绝对的公平，但是相对还是公平的。放在一个天平上，你得到的越多，也必须比别人承受的更多。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;你永远不知道自己有多坚强，直到有一天你除了坚强再无选择。&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;人不逼自己一把，永远不知道自己有多优秀&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;撑不住的时候，可以对自己说声“我好累”，但永远不要在心里承认说“我不行”&lt;/li&gt;
+  &lt;li&gt;知世故而不世故，才是最善良的成熟&lt;/li&gt;
+  &lt;li&gt;生命中有很多事情足以把你打倒，但真正打倒你的是自己的心态(信念丢失)&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;谁可以帮助我实现梦想？只有我和“我”(只有自己和一群有着相似目标的团体、平台（小我与大我）)&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;一生都在挣扎，决不放弃、直到倒在挣扎途中&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;你不快乐是因为：你可以像只猪一样懒，却无法像只猪一样，懒得心安理得&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;成长就是一个不断认为以前的自己是个傻X的过程&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;迷茫烦恼的问题主要在于：懂得不多而想太多。读书太少又特爱思考，还话唠，人丑就该多读书。&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;当你在高处的时候，你的朋友知道你是谁，当你坠落的时候，你才知道你的朋友是谁。&lt;/li&gt;
+  &lt;li&gt;不要在最应该奋斗的年纪选择去偷懒，只有度过了一段连自己都被感动的日子，才会变成那个最好的自己。&lt;/li&gt;
+  &lt;li&gt;本想把日子过成诗，时而简单，时而精致。不料日子却过成了我的歌，时而不靠谱，时而不着调。&lt;/li&gt;
+  &lt;li&gt;格局：如果一点点挫折就让你爬不起来，如果一两句坏话、就不能让你释怀，如果动不动就讨厌人，憎恨人，那格局就太小了。&lt;/li&gt;
+  &lt;li&gt;胸怀：做人有多大气，就会有多成功。海纳百川，有容乃大；壁立千仞，无欲则刚。因为胸怀，才是成功者的标志。&lt;/li&gt;
+  &lt;li&gt;铭记：永远要记住这句话：越努力，越幸运。&lt;/li&gt;
+  &lt;li&gt;空怀：放下你的浮躁，放下你的懒惰，放下你的三分钟热度，放空你禁不住诱惑的大脑，放开你容易被任何事物吸引的眼睛，放淡你什么都想聊两句八卦的嘴巴，静下心来好好做你该做的事，该好好努力了！有时真的努力后，你会发现自己要比想象的优秀很多。&lt;/li&gt;
+  &lt;li&gt;希望：世上除了生死，其他都是小事。不管遇到了什么烦心事，都不要自己为难自己；无论今天发生多么糟糕的事，都不要对生活失望，因为还有明天。&lt;/li&gt;
+  &lt;li&gt;目标：有目标的人在奔跑，没目标的人在流浪，因为不知道要去哪里！有目标的人在感恩，没目标的人在抱怨，因为觉得全世界都欠他的！有目标的人睡不着，没目标的人睡不醒，因为不知道起来去干嘛。&lt;/li&gt;
+  &lt;li&gt;生命只有走出来的精彩，没有等待出来的辉煌。&lt;/li&gt;
+  &lt;li&gt;坚持：如果感到此时的自己很辛苦，那告诉自己：容易走的都是下坡路！坚持住，因为你正在走上坡路，走过去，你就一定会有进步。&lt;/li&gt;
+  &lt;li&gt;努力：如果，你正在埋怨命运的不眷顾，那请记住：命，是失败者的借口；运，是成功者的谦词。命虽由天定，但埋怨，只是一种懦弱的表现。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;每一个理智淡定的现在，都有一个很傻很天真的曾经&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;我们要时刻准备好跟随自己的心，而不是随波逐流&lt;/li&gt;
+  &lt;li&gt;得到一件东西需要智慧，放弃一样东西则需要勇气。&lt;/li&gt;
+  &lt;li&gt;日子原该这样朴素无华，是时间左右了我们太多，才给了我们闯荡江湖的勇气，给了我们踏遍河山的决心。&lt;/li&gt;
+  &lt;li&gt;岁月终究不肯饶恕，你走过的一山一水，要用一朝一夕来偿还。&lt;/li&gt;
+  &lt;li&gt;做一个平静的人，做一个善良的人，做一个微笑挂在嘴边，快乐放在心上的人。&lt;/li&gt;
+  &lt;li&gt;如此情深，却难以启齿。其实你若真爱一个人，内心酸涩，反而会说不出话来，甜言蜜语，多数说给不相干的人听。&lt;/li&gt;
+  &lt;li&gt;如果时光倒转，我想在更美的年华里，遇见你。不要等我流泪，你才明白我的悲伤。不要等我消失，你才知道我的存在。&lt;/li&gt;
+  &lt;li&gt;怕什么路途遥远。走一步有走一步的风景，进一步有进一步的欢喜。快乐的人，不为失去的愤愤不平，只为还拥有的感激不已。你对成功的欲望必须大于对失败的恐惧，方能成功。近在咫尺的幸福是：每天拥有新的开始。&lt;/li&gt;
+  &lt;li&gt;等待太久得来的东西，多半已经不是当初自己想要的样子了。心情不好时，闭上眼，告诉自己，这是幻觉。&lt;/li&gt;
+  &lt;li&gt;有些事难以左右，有些话难以开口。好在时光慈悲，我们还能拥有回忆。没有人能陪你走一辈子，所以你要适应孤独；没有人会帮你一辈子，所以你要一直奋斗。&lt;/li&gt;
+  &lt;li&gt;人的不幸在于他们不想走自己那条路，总想过别人的桥。天下就没有偶然，那不过是化了妆的、戴了面具的必然。改变，永远不嫌晚。无论你是几岁，也无论你目前所处的境况有多糟，只要立定目标、一步一步往前走，人生随时都有翻盘的可能性。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;要生活的漂亮，需要付出极大忍耐，一不抱怨，二不解释。谁不是一边受伤，一边学会坚强。&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;忘掉所有那些“不可能“的借口，去坚持那一个”可能“的理由。所谓勇气，就是不断经历失败，但是从不丧失热情。&lt;/li&gt;
+  &lt;li&gt;当你每天醒来的时候都有两个选择：1、醒来，再睡，继续未完的美梦；2、醒来，站起来，去实现自己的梦想。有些话，适合烂在心里，有些痛苦，适合无声无息的忘记。当经历过，你成长了，自己知道就好。&lt;/li&gt;
+  &lt;li&gt;人经常往上看，就会长高；老是低头捡便宜，就会驼背。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;只要脚还在地上，就别把自己看的太轻；只要还活在地球上，就别把自己看的太重&lt;/strong&gt;&lt;之前一直不懂&gt;。&lt;/之前一直不懂&gt;&lt;/li&gt;
+  &lt;li&gt;面具若带得太久，就会长到脸上，想要揭下来，非得伤筋动骨扒皮不可。&lt;/li&gt;
+  &lt;li&gt;休息是为了走更长更远的路；舍得才能获得，放下才能去烦，忘记才能心宁，宽容才能得众。&lt;/li&gt;
+  &lt;li&gt;你怎样对别人，别人就会怎样对你，这是黄金定律！别人怎样对你，你就怎样对别人，这是白金法则！&lt;/li&gt;
+  &lt;li&gt;身后的知识，才是最强大的靠山。&lt;/li&gt;
+  &lt;li&gt;从对方的错误当中找出自己的责任，是彼此相爱的最好方法-威尔逊&lt;/li&gt;
+  &lt;li&gt;无论你经历过多少挫折，战胜国多少困难，让自己变得多么强大，但这世上总有一两个人只要出现，就总能恶心到你。&lt;/li&gt;
+  &lt;li&gt;我喜欢她是因为，我觉得她好，她什么都好。&lt;/li&gt;
+  &lt;li&gt;重要的人越来越少，但留下的人越来越重要。&lt;/li&gt;
+  &lt;li&gt;你的善良要留给那些懂得感恩的人，而不是那种将你的善良接受的理所应当且会欲求不满得寸进尺的贱人&lt;/li&gt;
+  &lt;li&gt;上天不给我的，无论我十指怎样紧扣，仍然走漏；给我的，无论过去我怎么失手，都会拥有。–三毛&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;有些事情，现在不做，以后估计再也不会做了&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;在生命的长河中，总有一段经历让你终生难忘，总有一段情感让你刻骨铭心，总有一种理想让你永不放弃，总有一种力量让你奋然前行&amp;lt;记得好像是一个高考作文题？&amp;gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;小兔子，还是什么兔子来着忘了&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://prometheuscx.github.io/img/User.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;ol&gt;
+  &lt;li&gt;即使是最难过的时候，也要告诉自己，坚强一点，马上就好啦。&lt;/li&gt;
+  &lt;li&gt;虽然我们很渺小，但这不代表我们不能走远远的路，做大大的事。&lt;/li&gt;
+  &lt;li&gt;生活没有彩排，每分每秒都是惊心动魄的现场直播。&lt;/li&gt;
+  &lt;li&gt;如果我们总是通过外表来判定一个人或者一只兔子，该有多少人和兔子被误解呀。&lt;/li&gt;
+  &lt;li&gt;在心情不好的时候，我总会深吸一口气，然后把厚厚的乌云吹走。&lt;/li&gt;
+  &lt;li&gt;不管现在是大雨还是狂风，不论你现在迷惘还是悲伤，要相信，一切都会好起来的，我用我的长耳朵向你保证。&lt;/li&gt;
+  &lt;li&gt;我每天都会记下那些开心的事情，不开心的时候拿出来看看，就像是阴天里的阳光银行。&lt;/li&gt;
+  &lt;li&gt;人都会生病，心有时也会生病，但我们要勇敢，承认自己生病了才能好起来啊。&lt;/li&gt;
+  &lt;li&gt;和你在一起的时候特别安心，就像带了合适的bra一样安心。&lt;/li&gt;
+  &lt;li&gt;异地恋的最大问题嘛，就是说话的时候，你看不到我的想念，我也看不到你的悲伤。&lt;/li&gt;
+  &lt;li&gt;有时候感觉自己被感情搞得手足无措，就像是一个温暖的泥沼。&lt;/li&gt;
+  &lt;li&gt;我们总忙着东奔西走，忙着跟上潮流，忙着微博和朋友圈，却忘了停下来，跟对方说一声我爱你。&lt;/li&gt;
+  &lt;li&gt;即使是最难过的时候，也要告诉自己，坚强一点，马上就好啦。&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;改变总是很难，但不改变，其实更难。&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;星期一要上班了，星期二还在怀念周末，周三表示好不适应上班，周四的时候一周过去一半啦 ，周五哎呀马上周末，周六嗯我得干点有意义的事情，周日啊妈妈妈妈妈呀又要上班了嘤嘤嘤：死循环。&lt;/li&gt;
+  &lt;li&gt;我们能给对方最好的爱，就是感同身受，哪怕不能，做到理解，也就足够了。&lt;/li&gt;
+  &lt;li&gt;世界上最好的最坏的最简单的最难的，就是耐心两个字啊。&lt;/li&gt;
+  &lt;li&gt;有时回过头看看自己走过的路，也许会发现很多意想不到的事情呢。&lt;/li&gt;
+  &lt;li&gt;遇到你，就像天上下牛奶雨一样，是一辈子都难得一见的惊喜。&lt;/li&gt;
+  &lt;li&gt;生活总是琐碎又复杂，总有那么些日子，我不得不踮着脚尖走路生怕自己搞砸了什么。&lt;/li&gt;
+  &lt;li&gt;你问我最难过的时候？没有最难过的时候，每次和你说再见都更难过一点。&lt;/li&gt;
+  &lt;li&gt;爱人，就是那个你能在他面前，心安理得放屁的人。&lt;/li&gt;
+  &lt;li&gt;生活中的大部分不开心，都可以通过多多拥抱爱的人来解决。&lt;/li&gt;
+  &lt;li&gt;如果没有人抱我，那……就自己给自己一个大大的拥抱吧~&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;相逢何必曾相识。但愿那时，我们相遇，在恰当的时机。恰好你来，恰好我在&lt;/strong&gt;。&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;p&gt;&lt;img src=&quot;http://prometheuscx.github.io/img/life-lang/life_hope.jpg&quot; alt=&quot;&quot; /&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+  &lt;p&gt;累死了，摘了这么多，希望自己有所改变&lt;a href=&quot;http://prometheuscx.github.io&quot;&gt;Prometheuscx&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+</description>
+        <pubDate>Wed, 16 Dec 2015 00:00:00 +0800</pubDate>
+        <link>http://prometheuscx.github.io.//2015/12/16/life-port/</link>
+        <guid isPermaLink="true">http://prometheuscx.github.io.//2015/12/16/life-port/</guid>
+        
+        <category>短句</category>
+        
+        <category>生活</category>
+        
+        
+      </item>
+    
+      <item>
         <title>java小技巧之-Web项目导出为war包？「译」</title>
-        <description>&lt;p&gt;废话少说，直接正主，使用命令行的方式将java项目导出为war包&lt;/p&gt;
+        <description>&lt;p&gt;通常我们都会遇到IDE的export功能，但有时也会不好使，这就需要敲命令了，废话不多说，直接正主。&lt;/p&gt;
 
-&lt;p&gt;*jar -cvf 导出war包名称.war *&lt;/p&gt;
+&lt;p&gt;前提该项目是一个web项目，编译后去WEB_ROOT 目录下，shift+右键，打开命令窗口，敲入以下命令&lt;/p&gt;
 
-&lt;p&gt;是不是很简单，哈哈&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;jar -cvf 导出war包名称.war *&lt;/code&gt;&lt;/p&gt;
+
+&lt;p&gt;这样就ok了，是不是很简单，然后只要去WEB_ROOT目录下找到你刚刚打的包就好了。&lt;/p&gt;
 
 </description>
         <pubDate>Wed, 16 Dec 2015 00:00:00 +0800</pubDate>

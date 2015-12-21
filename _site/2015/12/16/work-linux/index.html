@@ -10,9 +10,9 @@
     <meta name="keyword"  content="黄玄, Hux黄玄, Prometheuscx, 鬼栈, Prometheuscx, @huxpro, 黄玄的博客, Prometheuscx Blog, 博客, 个人网站, 互联网, 前端, 设计, 产品, 肖玉, Lynn, 肖玉的男朋友">
     <link rel="shortcut icon" href="img/kkcapture.ico">
 
-    <title>java小技巧之-Web项目导出为war包？「译」 - Prometheuscx Blog | Prometheuscx Blog</title>
+    <title>Linux Tomcat 常用命令 - Prometheuscx Blog | Prometheuscx Blog</title>
 
-    <link rel="canonical" href="http://prometheuscx.github.io.//2015/12/16/java/">
+    <link rel="canonical" href="http://prometheuscx.github.io.//2015/12/16/work-linux/">
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="/css/bootstrap.min.css">
@@ -129,12 +129,12 @@
 
     <!-- Image to hack wechat -->
 <!-- <img src="/img/icon_wechat.png" width="0" height="0"> -->
-<!-- <img src="/img/post-bg-js-version.jpg" width="0" height="0"> -->
+<!-- <img src="/img/contact-bg.jpg" width="0" height="0"> -->
 
 <!-- Post Header -->
 <style type="text/css">
     header.intro-header{
-        background-image: url('/img/post-bg-js-version.jpg')
+        background-image: url('/img/contact-bg.jpg')
     }
 </style>
 <header class="intro-header" >
@@ -144,13 +144,13 @@
                 <div class="post-heading">
                     <div class="tags">
                         
-                        <a class="tag" href="/tags/#Java" title="Java">Java</a>
+                        <a class="tag" href="/tags/#Linux" title="Linux">Linux</a>
                         
                     </div>
-                    <h1>java小技巧之-Web项目导出为war包？「译」</h1>
+                    <h1>Linux Tomcat 常用命令</h1>
                     
                     
-                    <h2 class="subheading">有时候不得不这么做，不是么?</h2>
+                    <h2 class="subheading">有时候也不得不这么做，不是么?</h2>
                     
                     <span class="meta">Posted by Prometheuscx on December 16, 2015</span>
                 </div>
@@ -170,13 +170,365 @@
                 col-md-10 col-md-offset-1
                 post-container">
 
-				<p>通常我们都会遇到IDE的export功能，但有时也会不好使，这就需要敲命令了，废话不多说，直接正主。</p>
+				<p>工作中总少不了与服务器打交道，那么问题来了，现在服务器都在部署在linux上面，然而linux与windows差异较大，所以掌握一些常见的linux命令是很重要滴。</p>
 
-<p>前提该项目是一个web项目，编译后去WEB_ROOT 目录下，shift+右键，打开命令窗口，敲入以下命令</p>
+<p>常用指令</p>
 
-<p><code>jar -cvf 导出war包名称.war *</code></p>
+<p>ls　　             显示文件或目录</p>
 
-<p>这样就ok了，是不是很简单，然后只要去WEB_ROOT目录下找到你刚刚打的包就好了。</p>
+<pre><code>  -l              列出文件详细信息l(list)
+
+  -a             列出当前目录下所有文件及目录，包括隐藏的a(all)
+</code></pre>
+
+<p>mkdir             创建目录</p>
+
+<pre><code>  -p            创建目录，若无父目录，则创建p(parent)
+</code></pre>
+
+<p>cd                 切换目录</p>
+
+<p>touch             创建空文件</p>
+
+<p>echo              创建带有内容的文件。</p>
+
+<p>cat                查看文件内容</p>
+
+<p>cp                 拷贝</p>
+
+<p>mv                移动或重命名</p>
+
+<p>rm                删除文件</p>
+
+<pre><code> -r            递归删除，可删除子目录及文件
+
+ -f            强制删除
+</code></pre>
+
+<p>find              在文件系统中搜索某文件</p>
+
+<p>wc                统计文本中行数、字数、字符数</p>
+
+<p>grep             在文本文件中查找某个字符串</p>
+
+<p>rmdir           删除空目录</p>
+
+<p>tree             树形结构显示目录，需要安装tree包</p>
+
+<p>pwd              显示当前目录</p>
+
+<p>ln                  创建链接文件</p>
+
+<p>more、less   分页显示文本文件内容</p>
+
+<p>head、tail    显示文件头、尾内容</p>
+
+<p>ctrl+alt+F1    命令行全屏模式</p>
+
+<p>系统管理命令</p>
+
+<p>stat               显示指定文件的详细信息，比ls更详细</p>
+
+<p>who               显示在线登陆用户</p>
+
+<p>whoami          显示当前操作用户</p>
+
+<p>hostname       显示主机名</p>
+
+<p>uname            显示系统信息</p>
+
+<p>top                 动态显示当前耗费资源最多进程信息</p>
+
+<p>ps                   显示瞬间进程状态 ps -aux</p>
+
+<p>du                   查看目录大小 du -h /home带有单位显示目录信息</p>
+
+<p>df                   查看磁盘大小 df -h 带有单位显示磁盘信息</p>
+
+<p>ifconfig          查看网络情况</p>
+
+<p>ping                测试网络连通</p>
+
+<p>netstat          显示网络状态信息</p>
+
+<p>man                命令不会用了，找男人  如：man ls</p>
+
+<p>clear              清屏</p>
+
+<p>alias               对命令重命名 如：alias showmeit=”ps -aux” ，另外解除使用unaliax showmeit</p>
+
+<p>kill                 杀死进程，可以先用ps 或 top命令查看进程的id，然后再用kill命令杀死进程。</p>
+
+<p>打包压缩相关命令</p>
+
+<p>gzip</p>
+
+<p>：</p>
+
+<p>bzip2</p>
+
+<p>：</p>
+
+<dl>
+  <dt>tar</dt>
+  <dd>
+    <p>打包压缩</p>
+  </dd>
+</dl>
+
+<pre><code>   -c              归档文件
+
+   -x              压缩文件
+
+   -z              gzip压缩文件
+
+   -j              bzip2压缩文件
+
+   -v              显示压缩或解压缩过程 v(view)
+
+   -f              使用档名
+</code></pre>
+
+<p>例：</p>
+
+<p>tar -cvf /home/abc.tar /home/abc</p>
+
+<pre><code>         只打包，不压缩
+</code></pre>
+
+<p>tar -zcvf /home/abc.tar.gz /home/abc</p>
+
+<pre><code>   打包，并用gzip压缩
+</code></pre>
+
+<p>tar -jcvf /home/abc.tar.bz2 /home/abc</p>
+
+<pre><code> 打包，并用bzip2压缩
+</code></pre>
+
+<p>当然，如果想解压缩，就直接替换上面的命令  tar -cvf  / tar -zcvf  / tar -jcvf 中的“c” 换成“x” 就可以了。</p>
+
+<p>关机/重启机器</p>
+
+<p>shutdown</p>
+
+<pre><code>   -r             关机重启
+
+   -h             关机不重启
+
+   now          立刻关机
+</code></pre>
+
+<p>halt               关机</p>
+
+<p>reboot          重启</p>
+
+<p>Linux管道</p>
+
+<p>将一个命令的标准输出作为另一个命令的标准输入。也就是把几个命令组合起来使用，后一个命令除以前一个命令的结果。</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>例：grep -r “close” /home/*</td>
+      <td>more</td>
+    </tr>
+  </tbody>
+</table>
+
+<pre><code>  在home目录下所有文件中查找，包括close的文件，并分页输出。
+</code></pre>
+
+<p>Linux软件包管理</p>
+
+<p>dpkg</p>
+
+<p>(Debian Package)管理工具，软件包名以.deb后缀。这种方法适合系统不能联网的情况下。</p>
+
+<p>比如安装tree命令的安装包，先将tree.deb传到Linux系统中。再使用如下命令安装。</p>
+
+<p>sudo dpkg -i tree_1.5.3-1_i386.deb</p>
+
+<pre><code>    安装软件
+</code></pre>
+
+<p>sudo dpkg -r tree</p>
+
+<pre><code>                                卸载软件
+</code></pre>
+
+<p>注：将tree.deb传到Linux系统中，有多种方式。VMwareTool，使用挂载方式；使用winSCP工具等；</p>
+
+<p>APT</p>
+
+<p>（Advanced Packaging Tool）高级软件工具。这种方法适合系统能够连接互联网的情况。</p>
+
+<p>依然以tree为例</p>
+
+<p>sudo apt-get install tree</p>
+
+<pre><code>                    安装tree
+</code></pre>
+
+<p>sudo apt-get remove tree</p>
+
+<pre><code>                  卸载tree
+</code></pre>
+
+<p>sudo apt-get update</p>
+
+<pre><code>                            更新软件
+</code></pre>
+
+<p>sudo apt-get upgrade</p>
+
+<p>将.rpm</p>
+
+<p>文件转为.deb文件</p>
+
+<p>.rpm为RedHat使用的软件格式。在Ubuntu下不能直接使用，所以需要转换一下。</p>
+
+<p>sudo alien abc.rpm</p>
+
+<p>vim使用</p>
+
+<p>vim三种模式：命令模式</p>
+
+<p>、插入模式、编辑模式。使用ESC或i或：来切换模式。</p>
+
+<p>命令模式下：</p>
+
+<p>:q                      退出</p>
+
+<p>:q!                     强制退出</p>
+
+<p>:wq                   保存并退出</p>
+
+<p>:set number     显示行号</p>
+
+<p>:set nonumber  隐藏行号</p>
+
+<p>/apache            在文档中查找apache 按n跳到下一个，shift+n上一个</p>
+
+<p>yyp                   复制光标所在行，并粘贴</p>
+
+<p>h(左移一个字符←)、j(下一行↓)、k(上一行↑)、l(右移一个字符→)</p>
+
+<p>用户及用户组管理</p>
+
+<p>/etc/passwd</p>
+
+<p>存储用户账号</p>
+
+<p>/etc/group存储组账号</p>
+
+<p>/etc/shadow</p>
+
+<p>存储用户账号的密码</p>
+
+<p>/etc/gshadow</p>
+
+<p>存储用户组账号的密码</p>
+
+<p>useradd  用户名</p>
+
+<p>userdel   用户名</p>
+
+<p>adduser    用户名</p>
+
+<p>groupadd   组名</p>
+
+<p>groupdel       组名</p>
+
+<p>passwd root   给root设置密码</p>
+
+<p>su root</p>
+
+<p>su – root</p>
+
+<p>/etc/profile</p>
+
+<pre><code>系统环境变量
+</code></pre>
+
+<p>bash_profile</p>
+
+<pre><code>用户环境变量
+</code></pre>
+
+<p>.bashrc</p>
+
+<pre><code>         用户环境变量
+</code></pre>
+
+<p>su user</p>
+
+<pre><code>         切换用户，加载配置文件.bashrc
+</code></pre>
+
+<p>su – user</p>
+
+<pre><code>       切换用户，加载配置文件/etc/profile ，加载bash_profile
+</code></pre>
+
+<p>更改文件的用户及用户组</p>
+
+<table>
+  <tbody>
+    <tr>
+      <td>sudo chown [-R] owner[:group] {File</td>
+      <td>Directory}</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>例如：还以jdk-7u21-linux-i586.tar.gz为例。属于用户hadoop，组hadoop</p>
+
+<p>要想切换此文件所属的用户及组。可以使用命令。</p>
+
+<p>sudo chown root:root jdk-7u21-linux-i586.tar.gz</p>
+
+<p>文件权限管理</p>
+
+<p>三种基本权限</p>
+
+<p>R           读         数值表示为4</p>
+
+<p>W          写         数值表示为2</p>
+
+<p>X           可执行  数值表示为1</p>
+
+<p>如图所示，jdk-7u21-linux-i586.tar.gz文件的权限为-rw-rw-r–</p>
+
+<p>-rw-rw-r–</p>
+
+<p>一共十个字符，分成四段。</p>
+
+<p>第一个字符“-”表示普通文件；这个位置还可能会出现“l”链接；“d”表示目录</p>
+
+<p>第二三四个字符“rw-”表示当前所属用户的权限。   所以用数值表示为4+2=6</p>
+
+<p>第五六七个字符“rw-”表示当前所属组的权限。      所以用数值表示为4+2=6</p>
+
+<p>第八九十个字符“r–”表示其他用户权限。              所以用数值表示为2</p>
+
+<p>所以操作此文件的权限用数值表示为662</p>
+
+<p>更改权限</p>
+
+<p>sudo chmod [u所属用户  g所属组  o其他用户  a所有用户]  [+增加权限  -减少权限]  [r  w  x]   目录名</p>
+
+<p>例如：有一个文件filename，权限为“-rw-r—-x” ,将权限值改为”-rwxrw-r-x”，用数值表示为765</p>
+
+<p>sudo chmod u+x g+w o+r  filename</p>
+
+<p>上面的例子可以用数值表示</p>
+
+<p>sudo chmod 765 filename</p>
+
+<p>工作中用到的一些有意思的命令：</p>
+
+<p>linux    nc      tree</p>
 
 
 
@@ -187,9 +539,13 @@
 
                 <ul class="pager">
                     
+                    <li class="previous">
+                        <a href="/2015/12/16/life-port/" data-toggle="tooltip" data-placement="top" title="成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！">&larr; Previous Post</a>
+                    </li>
+                    
                     
                     <li class="next">
-                        <a href="/2015/12/16/life-port/" data-toggle="tooltip" data-placement="top" title="成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！">Next Post &rarr;</a>
+                        <a href="/2015/12/17/IDEA/" data-toggle="tooltip" data-placement="top" title="IDEA 常用快捷键">Next Post &rarr;</a>
                     </li>
                     
                 </ul>

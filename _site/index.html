@@ -158,6 +158,125 @@
             ">
     			
 <div class="post-preview">
+    <a href="/2015/12/21/tomcat/">
+        <h2 class="post-title">
+            tomcat-服务器性能优化 
+        </h2>
+        
+        <h3 class="post-subtitle">
+            tomcat默认配置都是开发时，正式上线可能就要有一些改动
+        </h3>
+        
+        <div class="post-content-preview">
+            ##增加JVM堆（heap）
+&gt; 第一步  – 提高JVM栈内存Increase JVM heap memory
+
+你使用过tomcat的话，简单的说就是“内存溢出”. 通常情况下，这种问题出现在实际的生产环境中.产生这种问题的原因是tomcat使用较少的内存给进程,通过配置TOmcat的配置文件(Windows 下的catalina.bat或Linux下的catalina.sh)可以...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Prometheuscx on December 21, 2015
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2015/12/17/IDEA/">
+        <h2 class="post-title">
+            IDEA 常用快捷键
+        </h2>
+        
+        <h3 class="post-subtitle">
+            帮助我们提高写代码效率，更能愉悦的敲敲敲
+        </h3>
+        
+        <div class="post-content-preview">
+            IntelliJ Idea 常用快捷键列表
+
+Alt+回车 导入包,自动修正
+Ctrl+N   查找类
+Ctrl+Shift+N 查找文件
+Ctrl+Alt+L  格式化代码
+Ctrl＋Alt＋T可以把代码包在一块内，例如try/catch
+Alt＋Up and Alt＋Down 可在方法间快速移动
+Ctrl＋Alt＋B 可以跳转到抽象方法的实现
+Ctrl + G  可以快速移动到指定行
+C...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Prometheuscx on December 17, 2015
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2015/12/16/work-linux/">
+        <h2 class="post-title">
+            Linux Tomcat 常用命令
+        </h2>
+        
+        <h3 class="post-subtitle">
+            有时候也不得不这么做，不是么?
+        </h3>
+        
+        <div class="post-content-preview">
+            工作中总少不了与服务器打交道，那么问题来了，现在服务器都在部署在linux上面，然而linux与windows差异较大，所以掌握一些常见的linux命令是很重要滴。
+
+常用指令
+
+ls　　             显示文件或目录
+
+  -l              列出文件详细信息l(list)
+
+  -a             列出当前目录下所有文件及目录，包括隐藏的a(all)
+
+
+...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Prometheuscx on December 16, 2015
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
+    <a href="/2015/12/16/life-port/">
+        <h2 class="post-title">
+            成功一定有方法，失败一定有原因，失败的原因只有一个，学习不够！
+        </h2>
+        
+        <h3 class="post-subtitle">
+            请不要浪费时间 
+        </h3>
+        
+        <div class="post-content-preview">
+            关注”自由企业家”很久了，久而久之，就习惯了从上面摘录一些自己喜欢的句子，文字，确实被它影响了好多，是我一路上的良师益友
+
+
+  
+    尽量少干两件事：用自己的嘴干扰别人的生活，靠别人的脑子思考自己的人生
+  
+  
+    并不是所有的痛，都可以呐喊，也不是所有的爱，都可以表白，不要过分展现你的悲伤，因为，谁都没有比谁生活的容易。
+  
+
+
+
+
+
+  
+    世上最好的保鲜就是不断进...
+        </div>
+    </a>
+    <p class="post-meta">
+        Posted by Prometheuscx on December 16, 2015
+    </p>
+</div>
+<hr>
+
+<div class="post-preview">
     <a href="/2015/12/16/java/">
         <h2 class="post-title">
             java小技巧之-Web项目导出为war包？「译」
@@ -168,11 +287,13 @@
         </h3>
         
         <div class="post-content-preview">
-            废话少说，直接正主，使用命令行的方式将java项目导出为war包
+            通常我们都会遇到IDE的export功能，但有时也会不好使，这就需要敲命令了，废话不多说，直接正主。
 
-*jar -cvf 导出war包名称.war *
+前提该项目是一个web项目，编译后去WEB_ROOT 目录下，shift+右键，打开命令窗口，敲入以下命令
 
-是不是很简单，哈哈
+jar -cvf 导出war包名称.war *
+
+这样就ok了，是不是很简单，然后只要去WEB_ROOT目录下找到你刚刚打的包就好了。
 
 
         </div>
@@ -204,9 +325,15 @@
                     <div class="tags">
                         
                             
-                                <a href="/tags/#Java" title="Java" rel="1">
-                                    Java
-                                </a>
+                        
+                            
+                        
+                            
+                        
+                            
+                        
+                            
+                        
                             
                         
                     </div>
@@ -221,7 +348,7 @@
                             <img src="/img/User.jpg" />
                         
                         
-                            <p>写写代码，做做设计，看看产品。世界那么大，我想去看看。</p>
+                            <p>工作、骑行、旅游、健身，Family 有太多要实现 你要努力</p>
                         
                         <!-- SNS Link -->
                         <ul class="list-inline">
