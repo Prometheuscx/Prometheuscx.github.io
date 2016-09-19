@@ -1,4 +1,4 @@
-#Hux Blog
+#Prometheuscx Blog
 
 ###[View Live Hux Blog &rarr;](http://huxpro.github.io)
 
